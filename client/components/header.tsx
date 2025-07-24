@@ -89,7 +89,8 @@ export function Header() {
               ) : (
                 <div className="flex items-center space-x-2">
                   <Wallet className="h-4 w-4" />
-                  <WalletMultiButton/>
+                  <WalletMultiButton/
+                  >
                 </div>
               )}
             </Button>

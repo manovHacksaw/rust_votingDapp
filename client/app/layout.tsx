@@ -22,9 +22,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider defaultTheme="light" storageKey="kawaii-theme">
           <WalletContextProvider>
-            <div className="min-h-screen bg-gradient-kawaii dark:bg-gradient-kawaii-dark">
+            <div className="min-h-screen">
               <Header />
-              <main className="container mx-auto px-4 py-8">{children}</main>
+              <main>{children}</main>
             </div>
             <Toaster
               position="top-right"
