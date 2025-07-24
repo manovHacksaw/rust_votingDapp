@@ -1,0 +1,306 @@
+{
+  "address": "DEwjDB522WETWNoVWwa3W1rTvoX2Zs4DZPaSpzmny3M7",
+  "metadata": {
+    "name": "solana_voting",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "cast_vote",
+      "discriminator": [
+        20,
+        212,
+        15,
+        189,
+        69,
+        180,
+        69,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "campaign",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  109,
+                  112,
+                  97,
+                  105,
+                  103,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "campaign.creator",
+                "account": "Campaign"
+              },
+              {
+                "kind": "account",
+                "path": "campaign.description",
+                "account": "Campaign"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_receipt",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  101,
+                  105,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "campaign"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "poll_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "create_campaign",
+      "discriminator": [
+        111,
+        131,
+        187,
+        98,
+        160,
+        193,
+        114,
+        244
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "campaign",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  109,
+                  112,
+                  97,
+                  105,
+                  103,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "arg",
+                "path": "description"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "poll_descriptions",
+          "type": {
+            "vec": "string"
+          }
+        },
+        {
+          "name": "duration_in_seconds",
+          "type": "i64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Campaign",
+      "discriminator": [
+        50,
+        40,
+        49,
+        11,
+        157,
+        220,
+        229,
+        192
+      ]
+    },
+    {
+      "name": "VoteReceipt",
+      "discriminator": [
+        104,
+        20,
+        204,
+        252,
+        45,
+        84,
+        37,
+        195
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "TooManyProposals",
+      "msg": "Too many proposals. Maximum allowed is 10."
+    },
+    {
+      "code": 6001,
+      "name": "InvalidPollIndex",
+      "msg": "Invalid poll index."
+    },
+    {
+      "code": 6002,
+      "name": "EmptyDescription",
+      "msg": "Description cannot be empty."
+    },
+    {
+      "code": 6003,
+      "name": "NoProposals",
+      "msg": "Campaign must have at least one proposal."
+    },
+    {
+      "code": 6004,
+      "name": "CampaignExpired",
+      "msg": "Campaign has ended"
+    },
+    {
+      "code": 6005,
+      "name": "CampaignDurationTooShort",
+      "msg": "Campaign duration must be at least 1 hour."
+    },
+    {
+      "code": 6006,
+      "name": "CampaignDurationTooLong",
+      "msg": "Campaign duration exceeds maximum allowed (1 year)."
+    }
+  ],
+  "types": [
+    {
+      "name": "Campaign",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "polls",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "ProposalEntry"
+                }
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "ends_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalEntry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "votes",
+            "type": "u64"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteReceipt",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "campaign",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "poll_index",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
