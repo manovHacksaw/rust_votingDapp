@@ -1,405 +1,69 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Comfortaa:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap");
-@import "tailwindcss";
-
-@theme {
-  --color-border: 220 13% 91%;
-  --color-input: 220 13% 91%;
-  --color-ring: 346.8 77.2% 49.8%;
-  --color-background: 0 0% 100%;
-  --color-foreground: 240 10% 3.9%;
-  --color-primary: 346.8 77.2% 49.8%;
-  --color-primary-foreground: 355.7 100% 97.3%;
-  --color-secondary: 240 4.8% 95.9%;
-  --color-secondary-foreground: 240 5.9% 10%;
-  --color-muted: 240 4.8% 95.9%;
-  --color-muted-foreground: 240 3.8% 46.1%;
-  --color-accent: 240 4.8% 95.9%;
-  --color-accent-foreground: 240 5.9% 10%;
-  --color-destructive: 0 84.2% 60.2%;
-  --color-destructive-foreground: 0 0% 98%;
-  --radius: 1rem;
-
-  /* Dark theme */
-  @media (prefers-color-scheme: dark) {
-    --color-border: 240 3.7% 15.9%;
-    --color-input: 240 3.7% 15.9%;
-    --color-ring: 346.8 77.2% 49.8%;
-    --color-background: 20 14.3% 4.1%;
-    --color-foreground: 0 0% 95%;
-    --color-primary: 346.8 77.2% 49.8%;
-    --color-primary-foreground: 355.7 100% 97.3%;
-    --color-secondary: 240 3.7% 15.9%;
-    --color-secondary-foreground: 0 0% 98%;
-    --color-muted: 0 0% 15%;
-    --color-muted-foreground: 240 5% 64.9%;
-    --color-accent: 12 6.5% 15.1%;
-    --color-accent-foreground: 0 0% 98%;
-    --color-destructive: 0 62.8% 30.6%;
-    --color-destructive-foreground: 0 85.7% 97.3%;
-  }
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
-  * {
-    border-color: hsl(var(--color-border));
+  /* Light Mode: Soothing & Playful Japanese Theme */
+  :root {
+    --background: 40 33% 97%;      /* Warm, paper-like off-white */
+    --foreground: 240 10% 25%;     /* Soft charcoal */
+    --card: 0 0% 100%;             /* Clean white */
+    --card-foreground: 240 10% 25%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 25%;
+    --primary: 350 90% 80%;        /* Elegant "Sakura" Pink */
+    --primary-foreground: 240 10% 15%; /* Darker text for better contrast on pink */
+    --secondary: 90 20% 65%;       /* Muted Sage Green */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 240 5% 45%;
+    --accent: 90 20% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 20% 90%;          /* Subtle warm gray border */
+    --input: 40 20% 94%;
+    --ring: 350 90% 80%;
+    --radius: 0.5rem;
   }
 
+  /* Dark Mode: Soothing & Playful Japanese Theme */
+  .dark {
+    --background: 240 5% 12%;      /* Deep, muted charcoal */
+    --foreground: 240 5% 85%;      /* Soft light gray */
+    --card: 240 5% 16%;
+    --card-foreground: 240 5% 85%;
+    --popover: 240 5% 16%;
+    --popover-foreground: 240 5% 85%;
+    --primary: 350 90% 80%;        /* Sakura Pink (pops on dark) */
+    --primary-foreground: 240 10% 15%;
+    --secondary: 90 20% 65%;       /* Muted Sage Green */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 5% 20%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 90 20% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 20%;          /* Subtle dark border */
+    --input: 240 5% 20%;
+    --ring: 350 90% 80%;
+  }
+
+  /* Base Body Styles */
   body {
-    @apply font-sans bg-gradient-kawaii text-gray-900 min-h-screen antialiased;
+    @apply bg-background text-foreground;
+    font-family: "Noto Sans JP", sans-serif; /* Ensures the Japanese font is used */
   }
-
-  .dark body {
-    @apply bg-gradient-kawaii-dark text-gray-100;
-  }
-}
-
-@layer components {
-  /* Kawaii Card Component */
-  .kawaii-card {
-    @apply bg-white/80 backdrop-blur-sm rounded-kawaii border border-kawaii-pink-200 shadow-kawaii hover:shadow-kawaii-hover transition-all duration-300;
-  }
-
-  .dark .kawaii-card {
-    @apply bg-gray-900/80 border-kawaii-lavender-800 shadow-kawaii-lavender;
-  }
-
-  /* Kawaii Button Variants */
-  .kawaii-button {
-    @apply px-6 py-3 rounded-kawaii font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4;
-  }
-
-  .kawaii-button-primary {
-    @apply kawaii-button bg-gradient-to-r from-kawaii-pink-400 to-kawaii-lavender-400 text-white hover:from-kawaii-pink-500 hover:to-kawaii-lavender-500 shadow-kawaii-pink focus:ring-kawaii-pink-200;
-  }
-
-  .kawaii-button-secondary {
-    @apply kawaii-button bg-gradient-to-r from-kawaii-blue-400 to-kawaii-mint-400 text-white hover:from-kawaii-blue-500 hover:to-kawaii-mint-500 shadow-kawaii-blue focus:ring-kawaii-blue-200;
-  }
-
-  .kawaii-button-success {
-    @apply kawaii-button bg-gradient-to-r from-kawaii-mint-400 to-kawaii-mint-500 text-white hover:from-kawaii-mint-500 hover:to-kawaii-mint-600 shadow-kawaii-mint focus:ring-kawaii-mint-200;
-  }
-
-  .kawaii-button-outline {
-    @apply kawaii-button bg-transparent border-2 border-kawaii-pink-300 text-kawaii-pink-600 hover:bg-kawaii-pink-50 hover:border-kawaii-pink-400 focus:ring-kawaii-pink-200;
-  }
-
-  .dark .kawaii-button-outline {
-    @apply border-kawaii-lavender-600 text-kawaii-lavender-400 hover:bg-kawaii-lavender-900/20 hover:border-kawaii-lavender-500 focus:ring-kawaii-lavender-800;
-  }
-
-  /* Kawaii Input Component */
-  .kawaii-input {
-    @apply px-4 py-3 rounded-kawaii border-2 border-kawaii-pink-200 focus:border-kawaii-lavender-400 focus:ring-4 focus:ring-kawaii-lavender-100 transition-all duration-300 bg-white/80 backdrop-blur-sm placeholder-gray-400;
-  }
-
-  .dark .kawaii-input {
-    @apply border-kawaii-lavender-700 focus:border-kawaii-pink-400 focus:ring-kawaii-pink-900/20 bg-gray-800/80 text-gray-100 placeholder-gray-500;
-  }
-
-  .kawaii-input-error {
-    @apply border-kawaii-pink-400 bg-kawaii-pink-50 focus:ring-kawaii-pink-200;
-  }
-
-  .dark .kawaii-input-error {
-    @apply border-kawaii-pink-500 bg-kawaii-pink-900/20 focus:ring-kawaii-pink-800;
-  }
-
-  /* Kawaii Progress Bar */
-  .kawaii-progress {
-    @apply w-full bg-kawaii-pink-100 rounded-full h-3 overflow-hidden;
-  }
-
-  .dark .kawaii-progress {
-    @apply bg-kawaii-lavender-900/30;
-  }
-
-  .kawaii-progress-bar {
-    @apply h-full rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-kawaii-mint-400 to-kawaii-mint-500;
-  }
-
-  /* Kawaii Badge */
-  .kawaii-badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
-  }
-
-  .kawaii-badge-primary {
-    @apply kawaii-badge bg-kawaii-pink-100 text-kawaii-pink-700;
-  }
-
-  .dark .kawaii-badge-primary {
-    @apply bg-kawaii-pink-900/30 text-kawaii-pink-300;
-  }
-
-  .kawaii-badge-success {
-    @apply kawaii-badge bg-kawaii-mint-100 text-kawaii-mint-700;
-  }
-
-  .dark .kawaii-badge-success {
-    @apply bg-kawaii-mint-900/30 text-kawaii-mint-300;
-  }
-
-  /* Kawaii Loading Spinner */
-  .kawaii-spinner {
-    @apply animate-spin rounded-full border-4 border-kawaii-pink-200 border-t-kawaii-pink-600;
-  }
-
-  .dark .kawaii-spinner {
-    @apply border-kawaii-lavender-800 border-t-kawaii-lavender-400;
-  }
-
-  /* Container queries support */
-  .kawaii-container {
-    container-type: inline-size;
-  }
-
-  @container (min-width: 768px) {
-    .kawaii-responsive-text {
-      @apply text-lg;
-    }
-  }
-
-  @container (min-width: 1024px) {
-    .kawaii-responsive-text {
-      @apply text-xl;
-    }
+  * {
+    @apply border-border;
   }
 }
 
+/* You can keep your custom utilities if you still need them */
 @layer utilities {
-  /* Custom utilities for kawaii design */
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .text-pretty {
-    text-wrap: pretty;
-  }
-
-  /* Gradient text utilities */
-  .gradient-text-kawaii {
-    @apply bg-gradient-to-r from-kawaii-pink-500 to-kawaii-lavender-500 bg-clip-text text-transparent;
-  }
-
-  .gradient-text-kawaii-blue {
-    @apply bg-gradient-to-r from-kawaii-blue-500 to-kawaii-mint-500 bg-clip-text text-transparent;
-  }
-
-  /* Animation utilities */
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.5s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-}
-
-/* Custom scrollbar with modern syntax */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(220 13% 91%) hsl(220 13% 91%);
-}
-
-.dark * {
-  scrollbar-color: hsl(12 6.5% 15.1%) hsl(240 4.8% 95.9%);
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(220 13% 91%);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(220 13% 91%);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(220 13% 91%);
-}
-
-.dark ::-webkit-scrollbar-track {
-  background: hsl(240 4.8% 95.9%);
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: hsl(12 6.5% 15.1%);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: hsl(12 6.5% 15.1%);
-}
-
-/* React DatePicker custom styles with v4 syntax */
-.react-datepicker-wrapper {
-  width: 100%;
-}
-
-.react-datepicker__input-container input {
-  @apply kawaii-input w-full;
-}
-
-.react-datepicker {
-  @apply rounded-kawaii border-2 border-kawaii-pink-200 shadow-kawaii;
-}
-
-.react-datepicker__header {
-  @apply bg-gradient-to-r from-kawaii-pink-100 to-kawaii-lavender-100 rounded-t-kawaii border-b-2 border-kawaii-pink-200;
-}
-
-.react-datepicker__day--selected {
-  @apply bg-kawaii-lavender-400 text-white rounded-full;
-}
-
-.react-datepicker__day:hover {
-  @apply bg-kawaii-pink-200 rounded-full;
-}
-
-/* Sonner toast overrides with CSS custom properties */
-[data-sonner-toaster] {
-  --normal-bg: hsl(0 0% 100%);
-  --normal-border: hsl(220 13% 91%);
-  --normal-text: hsl(240 10% 3.9%);
-  --success-bg: hsl(140 40% 50%);
-  --success-border: hsl(140 40% 50%);
-  --success-text: hsl(140 40% 50%);
-  --error-bg: hsl(220 13% 91%);
-  --error-border: hsl(220 13% 91%);
-  --error-text: hsl(220 13% 91%);
-}
-
-.dark [data-sonner-toaster] {
-  --normal-bg: hsl(240 4.8% 95.9%);
-  --normal-border: hsl(240 3.7% 15.9%);
-  --normal-text: hsl(0 0% 95%);
-  --success-bg: hsl(140 40% 50%);
-  --success-border: hsl(140 40% 50%);
-  --success-text: hsl(140 40% 50%);
-  --error-bg: hsl(220 13% 91%);
-  --error-border: hsl(220 13% 91%);
-  --error-text: hsl(220 13% 91%);
-}
-
-[data-sonner-toast] {
-  @apply rounded-kawaii backdrop-blur-sm;
-}
-
-/* Modern CSS features */
-@supports (backdrop-filter: blur(10px)) {
   .kawaii-card {
-    backdrop-filter: blur(10px);
-  }
-}
-
-@supports (color-mix(in srgb, red, blue)) {
-  .kawaii-mixed-color {
-    background-color: color-mix(in srgb, hsl(220 13% 91%) 50%, hsl(240 4.8% 95.9%));
-  }
-}
-
-/* Container queries for responsive design */
-@container (min-width: 320px) {
-  .kawaii-responsive-card {
-    @apply p-4;
-  }
-}
-
-@container (min-width: 768px) {
-  .kawaii-responsive-card {
-    @apply p-6;
-  }
-}
-
-@container (min-width: 1024px) {
-  .kawaii-responsive-card {
-    @apply p-8;
-  }
-}
-
-/* View transitions API support */
-@view-transition {
-  navigation: auto;
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.3s;
-}
-
-/* Modern color syntax with relative colors */
-.kawaii-hover-effect {
-  background-color: hsl(220 13% 91%);
-  transition: background-color 0.3s ease;
-}
-
-.kawaii-hover-effect:hover {
-  background-color: color-mix(in srgb, hsl(220 13% 91%) 80%, white);
-}
-
-/* CSS nesting for better organization */
-.kawaii-button-group {
-  @apply flex gap-2;
-
-  & .kawaii-button {
-    @apply flex-1;
-
-    &:first-child {
-      @apply rounded-l-kawaii;
-    }
-
-    &:last-child {
-      @apply rounded-r-kawaii;
-    }
-
-    &:not(:first-child):not(:last-child) {
-      @apply rounded-none;
-    }
-  }
-}
-
-/* Modern focus styles */
-.kawaii-focus {
-  &:focus-visible {
-    @apply outline-none ring-4 ring-kawaii-lavender-200 ring-offset-2;
-  }
-}
-
-/* Logical properties */
-.kawaii-spacing {
-  padding-inline: theme(spacing 0.4);
-  padding-block: theme(spacing 0.2);
-  margin-inline: auto;
-}
-
-/* CSS Grid with subgrid support */
-@supports (grid-template-rows: subgrid) {
-  .kawaii-subgrid {
-    display: grid;
-    grid-template-rows: subgrid;
+    @apply bg-card/80 backdrop-blur-sm border-2 border-primary/20 shadow-lg;
+    border-radius: var(--radius);
   }
 }
