@@ -1,14 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useConnection } from "@solana/wallet-adapter-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RefreshCw, Calendar, User, TrendingUp, Vote } from "lucide-react"
 import { toast } from "sonner"
-import { getAllCampaigns } from "@/lib/solana-utils"
-import useProgram from "@/hooks/use-program"
+import { useProgram } from "@/hooks/use-program"
 
 interface Campaign {
   address: string
@@ -23,18 +21,33 @@ interface Campaign {
 }
 
 export function CampaignList() {
-  const { connection } = useConnection()
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const {getAllCampaigns: getCampaignsFromContract} = useProgram();
+  const { getAllCampaigns, isReady } = useProgram()
 
   const loadCampaigns = async () => {
+    if (!isReady) {
+      toast.error("Please connect your wallet first")
+      return
+    }
+
     setIsLoading(true)
     try {
-      const campaignData = await getAllCampaigns(connection)
-      setCampaigns(campaignData)
-      await getCampaignsFromContract();
-    
+      const campaignData = await getAllCampaigns()
+      // Transform the data to match the expected interface
+      const formattedCampaigns = campaignData.map(campaign => ({
+        address: campaign.publicKey,
+        description: campaign.account.description,
+        creator: campaign.account.creator.toString(),
+        polls: campaign.account.polls.map(poll => ({
+          description: poll.description,
+          votes: poll.votes.toNumber()
+        })),
+        createdAt: campaign.account.createdAt.toNumber(),
+        endsAt: campaign.account.endsAt.toNumber()
+      }))
+
+      setCampaigns(formattedCampaigns)
       toast.success("Success! Campaigns loaded. ✨")
     } catch (error) {
       console.error("Error loading campaigns:", error)
@@ -45,8 +58,10 @@ export function CampaignList() {
   }
 
   useEffect(() => {
-    loadCampaigns()
-  }, [connection])
+    if (isReady) {
+      loadCampaigns()
+    }
+  }, [isReady])
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleDateString()

@@ -3,8 +3,10 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { PublicKey } from "@solana/web3.js"
+import { useSolana } from "@/hooks/use-solana"
+import { useProgram } from "@/hooks/use-program"
+import { CampaignSelector } from "@/components/campaign-selector"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,16 +14,19 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Vote, Info } from "lucide-react"
 import { toast } from "sonner"
-import { castVote } from "@/lib/solana-utils"
+
 
 export function CastVoteForm() {
-  const { publicKey, signTransaction } = useWallet()
-  const { connection } = useConnection()
+  const { publicKey } = useSolana()
+  const { castVote, hasVoted, isReady } = useProgram()
   const [isLoading, setIsLoading] = useState(false)
+  const [checkingVote, setCheckingVote] = useState(false)
+  const [alreadyVoted, setAlreadyVoted] = useState(false)
   const [formData, setFormData] = useState({
     campaignAddress: "",
     pollIndex: "",
   })
+  const [selectedCampaignPolls, setSelectedCampaignPolls] = useState<Array<{description: string, votes: number}>>([])
 
   const validateForm = () => {
     if (!formData.campaignAddress.trim()) {
@@ -50,11 +55,32 @@ export function CastVoteForm() {
     return true
   }
 
+  const handleCampaignSelect = async (campaignAddress: string, polls: Array<{description: string, votes: number}>) => {
+    setFormData({ ...formData, campaignAddress, pollIndex: "" })
+    setSelectedCampaignPolls(polls)
+
+    // Check if user has already voted
+    if (publicKey && isReady) {
+      setCheckingVote(true)
+      try {
+        const voted = await hasVoted(new PublicKey(campaignAddress))
+        setAlreadyVoted(voted)
+        if (voted) {
+          toast.info("You have already voted on this campaign")
+        }
+      } catch (error) {
+        console.error("Error checking vote status:", error)
+      } finally {
+        setCheckingVote(false)
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!publicKey || !signTransaction) {
-      toast.error("Oops! Please connect your wallet.")
+    if (!isReady) {
+      toast.error("Oops! Please connect your wallet and wait for program to load.")
       return
     }
 
@@ -69,10 +95,10 @@ export function CastVoteForm() {
       const campaignPubkey = new PublicKey(formData.campaignAddress)
       const pollIndex = Number.parseInt(formData.pollIndex)
 
-      await castVote(connection, publicKey, signTransaction, campaignPubkey, pollIndex)
+      const result = await castVote(campaignPubkey, pollIndex)
 
       toast.success("Success! Your vote has been cast. ✨", {
-        description: "Your vote is now recorded on the blockchain",
+        description: `Transaction: ${result.signature.slice(0, 8)}...`,
       })
 
       // Reset form
@@ -80,6 +106,8 @@ export function CastVoteForm() {
         campaignAddress: "",
         pollIndex: "",
       })
+      setSelectedCampaignPolls([])
+      setAlreadyVoted(false)
     } catch (error) {
       console.error("Error casting vote:", error)
       toast.error("Oops! Something went wrong. Please try again.", {
@@ -102,18 +130,18 @@ export function CastVoteForm() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
-              <Label htmlFor="campaignAddress" className="text-base font-medium">
-                Campaign Address
+              <Label className="text-base font-medium">
+                Select Campaign
               </Label>
-              <Input
-                id="campaignAddress"
-                placeholder="Enter the campaign's public key address"
-                value={formData.campaignAddress}
-                onChange={(e) => setFormData({ ...formData, campaignAddress: e.target.value })}
-                className="font-mono text-sm"
-                required
+              <CampaignSelector
+                onCampaignSelect={handleCampaignSelect}
+                selectedCampaign={formData.campaignAddress}
               />
-              <p className="text-sm text-muted-foreground">The Solana address of the campaign you want to vote on</p>
+              {formData.campaignAddress && (
+                <div className="text-xs text-muted-foreground font-mono break-all bg-muted/30 p-2 rounded">
+                  Campaign Address: {formData.campaignAddress}
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -123,19 +151,32 @@ export function CastVoteForm() {
               <Select
                 value={formData.pollIndex}
                 onValueChange={(value) => setFormData({ ...formData, pollIndex: value })}
+                disabled={!formData.campaignAddress || selectedCampaignPolls.length === 0}
               >
                 <SelectTrigger className="text-base">
-                  <SelectValue placeholder="Select which option to vote for" />
+                  <SelectValue placeholder={
+                    !formData.campaignAddress ? "Select a campaign first" :
+                    selectedCampaignPolls.length === 0 ? "No poll options available" :
+                    "Select which option to vote for"
+                  } />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from({ length: 10 }, (_, i) => (
-                    <SelectItem key={i} value={i.toString()}>
-                      Option {i + 1}
+                  {selectedCampaignPolls.map((poll, index) => (
+                    <SelectItem key={index} value={index.toString()}>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="truncate max-w-[200px]">{poll.description}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">({poll.votes} votes)</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-sm text-muted-foreground">Choose which poll option you want to vote for (0-9)</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedCampaignPolls.length > 0 ?
+                  `Choose from ${selectedCampaignPolls.length} available options` :
+                  "Poll options will appear after selecting a campaign"
+                }
+              </p>
             </div>
 
             <div className="bg-muted/30 border rounded-lg p-6">
@@ -151,8 +192,27 @@ export function CastVoteForm() {
               </ul>
             </div>
 
-            <Button type="submit" className="w-full py-6 text-base font-medium" disabled={isLoading}>
-              {isLoading ? "Casting Vote..." : "Cast Vote"}
+            {alreadyVoted && (
+              <div className="bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+                <div className="flex items-center gap-3 text-orange-800 dark:text-orange-200">
+                  <Info className="w-5 h-5" />
+                  <span className="font-medium">Already Voted</span>
+                </div>
+                <p className="text-sm text-orange-700 dark:text-orange-300 mt-2">
+                  You have already cast your vote on this campaign. Each wallet can only vote once per campaign.
+                </p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full py-6 text-base font-medium"
+              disabled={isLoading || alreadyVoted || checkingVote}
+            >
+              {isLoading ? "Casting Vote..." :
+               checkingVote ? "Checking vote status..." :
+               alreadyVoted ? "Already Voted" :
+               "Cast Vote"}
             </Button>
           </form>
         </CardContent>

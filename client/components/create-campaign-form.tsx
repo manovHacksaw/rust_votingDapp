@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useWallet, useConnection } from "@solana/wallet-adapter-react"
+import { useSolana } from "@/hooks/use-solana"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,12 +11,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2, FileText } from "lucide-react"
 import { toast } from "sonner"
-import useProgram from "@/hooks/use-program"
+import { useProgram } from "@/hooks/use-program"
 
 export function CreateCampaignForm() {
-  const { publicKey, signTransaction } = useWallet()
-  const { connection } = useConnection()
-  const {createCampaign} = useProgram();
+  const { publicKey } = useSolana()
+  const { createCampaign, isReady } = useProgram()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     description: "",
@@ -83,8 +82,8 @@ export function CreateCampaignForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!publicKey || !signTransaction) {
-      toast.error("Oops! Please connect your wallet.")
+    if (!isReady) {
+      toast.error("Oops! Please connect your wallet and wait for program to load.")
       return
     }
 
@@ -97,21 +96,10 @@ export function CreateCampaignForm() {
 
     try {
       const durationInSeconds = formData.durationHours * 3600
+      const result = await createCampaign(formData.description, formData.pollDescriptions, durationInSeconds)
 
-      await createCampaign(formData.description, formData.pollDescriptions, durationInSeconds);
-
-     
-    } catch (error) {
-      console.error("Error creating campaign:", error)
-      toast.error("Oops! Something went wrong. Please try again.", {
-        description: error instanceof Error ? error.message : "Please check your connection and try again",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-
-     toast.success("Success! Your campaign has been created. ✨", {
-        description: "Your voting campaign is now live",
+      toast.success("Success! Your campaign has been created. ✨", {
+        description: `Campaign ID: ${result.campaignPDA.slice(0, 8)}...`,
       })
 
       // Reset form
@@ -120,6 +108,14 @@ export function CreateCampaignForm() {
         pollDescriptions: ["", ""],
         durationHours: 24,
       })
+    } catch (error) {
+      console.error("Error creating campaign:", error)
+      toast.error("Oops! Something went wrong. Please try again.", {
+        description: error instanceof Error ? error.message : "Please check your connection and try again",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
