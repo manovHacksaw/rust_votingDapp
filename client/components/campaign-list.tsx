@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { RefreshCw, Calendar, User, TrendingUp, Vote } from "lucide-react"
 import { toast } from "sonner"
 import { getAllCampaigns } from "@/lib/solana-utils"
+import useProgram from "@/hooks/use-program"
 
 interface Campaign {
   address: string
@@ -25,12 +26,15 @@ export function CampaignList() {
   const { connection } = useConnection()
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const {getAllCampaigns: getCampaignsFromContract} = useProgram();
 
   const loadCampaigns = async () => {
     setIsLoading(true)
     try {
       const campaignData = await getAllCampaigns(connection)
       setCampaigns(campaignData)
+      await getCampaignsFromContract();
+    
       toast.success("Success! Campaigns loaded. ✨")
     } catch (error) {
       console.error("Error loading campaigns:", error)

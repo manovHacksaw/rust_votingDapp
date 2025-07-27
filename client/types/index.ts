@@ -1,14 +1,20 @@
-{
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/solana_voting.json`.
+ */
+export type SolanaVoting = {
   "address": "DEwjDB522WETWNoVWwa3W1rTvoX2Zs4DZPaSpzmny3M7",
   "metadata": {
-    "name": "solana_voting",
+    "name": "solanaVoting",
     "version": "0.1.0",
     "spec": "0.1.0",
     "description": "Created with Anchor"
   },
   "instructions": [
     {
-      "name": "cast_vote",
+      "name": "castVote",
       "discriminator": [
         20,
         212,
@@ -46,18 +52,18 @@
               {
                 "kind": "account",
                 "path": "campaign.creator",
-                "account": "Campaign"
+                "account": "campaign"
               },
               {
                 "kind": "account",
                 "path": "campaign.description",
-                "account": "Campaign"
+                "account": "campaign"
               }
             ]
           }
         },
         {
-          "name": "vote_receipt",
+          "name": "voteReceipt",
           "writable": true,
           "pda": {
             "seeds": [
@@ -85,19 +91,19 @@
           }
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "poll_index",
+          "name": "pollIndex",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "create_campaign",
+      "name": "createCampaign",
       "discriminator": [
         111,
         131,
@@ -144,7 +150,7 @@
           }
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -154,13 +160,13 @@
           "type": "string"
         },
         {
-          "name": "poll_descriptions",
+          "name": "pollDescriptions",
           "type": {
             "vec": "string"
           }
         },
         {
-          "name": "duration_in_seconds",
+          "name": "durationInSeconds",
           "type": "i64"
         }
       ]
@@ -168,7 +174,7 @@
   ],
   "accounts": [
     {
-      "name": "Campaign",
+      "name": "campaign",
       "discriminator": [
         50,
         40,
@@ -181,7 +187,7 @@
       ]
     },
     {
-      "name": "VoteReceipt",
+      "name": "voteReceipt",
       "discriminator": [
         104,
         20,
@@ -197,43 +203,43 @@
   "errors": [
     {
       "code": 6000,
-      "name": "TooManyProposals",
+      "name": "tooManyProposals",
       "msg": "Too many proposals. Maximum allowed is 10."
     },
     {
       "code": 6001,
-      "name": "InvalidPollIndex",
+      "name": "invalidPollIndex",
       "msg": "Invalid poll index."
     },
     {
       "code": 6002,
-      "name": "EmptyDescription",
+      "name": "emptyDescription",
       "msg": "Description cannot be empty."
     },
     {
       "code": 6003,
-      "name": "NoProposals",
+      "name": "noProposals",
       "msg": "Campaign must have at least one proposal."
     },
     {
       "code": 6004,
-      "name": "CampaignExpired",
+      "name": "campaignExpired",
       "msg": "Campaign has ended"
     },
     {
       "code": 6005,
-      "name": "CampaignDurationTooShort",
+      "name": "campaignDurationTooShort",
       "msg": "Campaign duration must be at least 1 hour."
     },
     {
       "code": 6006,
-      "name": "CampaignDurationTooLong",
+      "name": "campaignDurationTooLong",
       "msg": "Campaign duration exceeds maximum allowed (1 year)."
     }
   ],
   "types": [
     {
-      "name": "Campaign",
+      "name": "campaign",
       "type": {
         "kind": "struct",
         "fields": [
@@ -250,24 +256,24 @@
             "type": {
               "vec": {
                 "defined": {
-                  "name": "ProposalEntry"
+                  "name": "proposalEntry"
                 }
               }
             }
           },
           {
-            "name": "created_at",
+            "name": "createdAt",
             "type": "i64"
           },
           {
-            "name": "ends_at",
+            "name": "endsAt",
             "type": "i64"
           }
         ]
       }
     },
     {
-      "name": "ProposalEntry",
+      "name": "proposalEntry",
       "type": {
         "kind": "struct",
         "fields": [
@@ -283,7 +289,7 @@
       }
     },
     {
-      "name": "VoteReceipt",
+      "name": "voteReceipt",
       "type": {
         "kind": "struct",
         "fields": [
@@ -296,11 +302,11 @@
             "type": "pubkey"
           },
           {
-            "name": "poll_index",
+            "name": "pollIndex",
             "type": "u8"
           }
         ]
       }
     }
   ]
-}
+};

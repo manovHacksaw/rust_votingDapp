@@ -14,7 +14,7 @@ import "@solana/wallet-adapter-react-ui/styles.css"
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
   const network = WalletAdapterNetwork.Devnet
-  const endpoint = useMemo(() => clusterApiUrl(network), [network])
+    const endpoint = useMemo(() => "http://127.0.0.1:8899", [])
 
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], [])
 

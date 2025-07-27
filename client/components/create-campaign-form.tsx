@@ -11,11 +11,12 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2, FileText } from "lucide-react"
 import { toast } from "sonner"
-import { createCampaign } from "@/lib/solana-utils"
+import useProgram from "@/hooks/use-program"
 
 export function CreateCampaignForm() {
   const { publicKey, signTransaction } = useWallet()
   const { connection } = useConnection()
+  const {createCampaign} = useProgram();
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     description: "",
@@ -97,16 +98,19 @@ export function CreateCampaignForm() {
     try {
       const durationInSeconds = formData.durationHours * 3600
 
-      await createCampaign(
-        connection,
-        publicKey,
-        signTransaction,
-        formData.description,
-        formData.pollDescriptions.filter((desc) => desc.trim()),
-        durationInSeconds,
-      )
+      await createCampaign(formData.description, formData.pollDescriptions, durationInSeconds);
 
-      toast.success("Success! Your campaign has been created. ✨", {
+     
+    } catch (error) {
+      console.error("Error creating campaign:", error)
+      toast.error("Oops! Something went wrong. Please try again.", {
+        description: error instanceof Error ? error.message : "Please check your connection and try again",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+
+     toast.success("Success! Your campaign has been created. ✨", {
         description: "Your voting campaign is now live",
       })
 
@@ -116,14 +120,6 @@ export function CreateCampaignForm() {
         pollDescriptions: ["", ""],
         durationHours: 24,
       })
-    } catch (error) {
-      console.error("Error creating campaign:", error)
-      toast.error("Oops! Something went wrong. Please try again.", {
-        description: error instanceof Error ? error.message : "Please check your connection and try again",
-      })
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   return (
