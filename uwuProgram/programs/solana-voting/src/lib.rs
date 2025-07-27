@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("DEwjDB522WETWNoVWwa3W1rTvoX2Zs4DZPaSpzmny3M7");
+declare_id!("Gf73oFVLW2DoqfRGaGHb9pAmvXPkJC6ZjNZTJEvaKC5v");
 
 // Define a constant for minimum campaign duration
 const MIN_CAMPAIGN_DURATION_SECS: i64 = 60 * 60; // 1 hour
